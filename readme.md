@@ -8,6 +8,7 @@
 - /api/users/sellers [Returns all Sellers]
 - /api/users/buyers [Returns all Buyers]
 - /api/blogs [Returns all Blogs]
+- /api/users/role/:email [Get user role]
 
 ## Post Operations
 

@@ -10,7 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Stuff
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.f3qt6qk.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.f3qt6qk.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb://localhost:27017`;
 const client = new MongoClient(uri);
 
 // Connect to MongoDB
@@ -63,6 +64,45 @@ const productsCollection = client.db("gpuHunt").collection("products");
 app.get("/", (req, res) => {
   res.send("GPUHunt's REST API is running");
 });
+
+// ****************************************************************
+// Users Collections
+// ****************************************************************
+const user = {
+  email: "user@gmail.com",
+  password: "45646dgf546df",
+  role: "user",
+  image: "https://buffer.com/library/content/images/2022/03/amina.png",
+  wishlists: [],
+};
+// Insert a new user
+app.post("/api/users", async (req, res) => {
+  try {
+    const userInfo = req.body;
+    if (userInfo) {
+      const result = await usersCollection.insertOne(userInfo);
+      return res.send(result);
+    }
+    res.send("Send body information");
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Return user role
+app.get("/api/users/role/:email", async (req, res) => {
+  const email = req.params.email;
+  const query = { email };
+  const result = await usersCollection.findOne(query);
+  if (result?.role) {
+    return res.send(result?.role);
+  }
+  return res.send(false);
+});
+
+// ****************************************************************
+// Products Collections
+// ****************************************************************
 
 // Invalid Route Error
 app.use((req, res) => {
