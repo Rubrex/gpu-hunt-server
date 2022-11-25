@@ -10,6 +10,7 @@
 - /api/blogs [Returns all Blogs]
 - /api/users/role/:email [Get user role]
 - /api/categories [Returns all categories]
+- /api/categories/:catName [Get single category items]
 
 ## Post Operations
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const colors = require("colors");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 
@@ -108,6 +108,15 @@ app.get("/api/users/role/:email", async (req, res) => {
 // ****************************************************************
 // Products Collections
 // ****************************************************************
+// Get all advertised products
+app.get("/api/products/advertised", async (req, res) => {
+  const query = { advertised: true };
+  const advertised = await productsCollection.find(query).toArray();
+  const availableAdvertisedProducts = advertised.filter(
+    (product) => product.sold !== true
+  );
+  res.send(availableAdvertisedProducts);
+});
 
 // ****************************************************************
 // Categories Collections
@@ -132,8 +141,19 @@ app.get("/api/users/role/:email", async (req, res) => {
 
 app.get("/api/categories", async (req, res) => {
   try {
-    console.log("API hit!");
     const categories = await categoriesCollection.find({}).toArray();
+    res.send(categories);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Get single category products
+app.get("/api/categories/:categoryName", async (req, res) => {
+  try {
+    const catName = req.params.categoryName;
+    const query = { productCategory: catName };
+    const categories = await productsCollection.find(query).toArray();
     res.send(categories);
   } catch (err) {
     console.log(err);
