@@ -29,6 +29,7 @@ connectDB();
 // Select Database & collections
 const usersCollection = client.db("gpuHunt").collection("users");
 const productsCollection = client.db("gpuHunt").collection("products");
+const categoriesCollection = client.db("gpuHunt").collection("categories");
 
 // ENDPOINTS
 /**
@@ -68,13 +69,13 @@ app.get("/", (req, res) => {
 // ****************************************************************
 // Users Collections
 // ****************************************************************
-const user = {
+/* const user = {
   email: "user@gmail.com",
   password: "45646dgf546df",
   role: "user",
   image: "https://buffer.com/library/content/images/2022/03/amina.png",
   wishlists: [],
-};
+}; */
 // Insert a new user
 app.post("/api/users", async (req, res) => {
   try {
@@ -91,18 +92,53 @@ app.post("/api/users", async (req, res) => {
 
 // Return user role "user" || "admin" || false
 app.get("/api/users/role/:email", async (req, res) => {
-  const email = req.params.email;
-  const query = { email };
-  const result = await usersCollection.findOne(query);
-  if (result?.role) {
-    return res.send(result?.role);
+  try {
+    const email = req.params.email;
+    const query = { email };
+    const result = await usersCollection.findOne(query);
+    if (result?.role) {
+      return res.send(result?.role);
+    }
+    return res.send(false);
+  } catch (err) {
+    console.log(err);
   }
-  return res.send(false);
 });
 
 // ****************************************************************
 // Products Collections
 // ****************************************************************
+
+// ****************************************************************
+// Categories Collections
+// ****************************************************************
+
+// const categories = [
+//   {
+//     category: "GTX Series",
+//     image: "https://i.ibb.co/k02VXk9/gtx-logo.png",
+//   },
+//   {
+//     category: "RTX Series",
+//     image: "https://i.ibb.co/0Mjcfbk/rtx-logo.png",
+//   },
+//   {
+//     category: "RADEON Series",
+//     image: "https://i.ibb.co/J2Br9Pq/amd-radeon.png",
+//   },
+// ];
+
+// Get all Categories
+
+app.get("/api/categories", async (req, res) => {
+  try {
+    console.log("API hit!");
+    const categories = await categoriesCollection.find({}).toArray();
+    res.send(categories);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 // Invalid Route Error
 app.use((req, res) => {
