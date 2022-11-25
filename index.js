@@ -89,7 +89,7 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
-// Return user role
+// Return user role "user" || "admin" || false
 app.get("/api/users/role/:email", async (req, res) => {
   const email = req.params.email;
   const query = { email };
