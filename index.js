@@ -67,6 +67,39 @@ app.get("/", (req, res) => {
   res.send("GPUHunt's REST API is running");
 });
 
+// Pay Order
+// Changing paid to true in both ordersCollection and productsCollection
+app.patch("/api/orders/:productId", async (req, res) => {
+  try {
+    const orderId = req.params.productId;
+    const ordersQuery = { productId: orderId };
+    const ordersDoc = { $set: { paid: true } };
+    // update paid to true in orders collection
+    const ordersResult = await ordersCollection.updateOne(
+      ordersQuery,
+      ordersDoc
+    );
+    // update paid to true in products collection
+    const productsQuery = { _id: ObjectId(orderId) };
+    const productsDoc = { $set: { paid: true } };
+    const productsResult = await productsCollection.updateOne(
+      productsQuery,
+      productsDoc
+    );
+    console.log(ordersResult, productsResult);
+
+    if (ordersResult.modifiedCount && productsResult.modifiedCount) {
+      return res.send(ordersResult);
+    }
+    res.send({
+      acknowledged: true,
+      modifiedCount: 0,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // ****************************************************************
 // Orders Collections
 // ****************************************************************
