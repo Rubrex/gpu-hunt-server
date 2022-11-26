@@ -4,7 +4,6 @@
 - /api/products/category/:name [Returns all products to that catagory, filter out sold products]
 - /api/products/advertised [Returns only advertised products, filter out sold products]
 - /api/users/wishlists [Returns wishlists for single user] [OPTIONAL]
-- /api/products/myProducts/:email [Returns all products to that seller]
 - /api/users/sellers [Returns all Sellers]
 - /api/users/buyers [Returns all Buyers]
 - /api/blogs [Returns all Blogs]
