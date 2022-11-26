@@ -76,6 +76,21 @@ app.get("/", (req, res) => {
   image: "https://buffer.com/library/content/images/2022/03/amina.png",
   wishlists: [],
 }; */
+
+// Is user verified true || false
+app.get("/api/users/verified/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const user = await usersCollection.findOne({ email });
+    if (user?.verified) {
+      return res.send(true);
+    }
+    res.send(false);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // Insert a new user
 app.post("/api/users", async (req, res) => {
   try {
@@ -108,6 +123,18 @@ app.get("/api/users/role/:email", async (req, res) => {
 // ****************************************************************
 // Products Collections
 // ****************************************************************
+
+// Add new product
+app.post("/api/products", async (req, res) => {
+  try {
+    const productData = req.body;
+    const added = await productsCollection.insertOne(productData);
+    res.send(added);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // Get all advertised products
 app.get("/api/products/advertised", async (req, res) => {
   const query = { advertised: true };
@@ -116,6 +143,19 @@ app.get("/api/products/advertised", async (req, res) => {
     (product) => product.sold !== true
   );
   res.send(availableAdvertisedProducts);
+});
+
+// Get all products for a seller email
+app.get("/api/products/myProducts/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const query = { sellerEmail: email };
+    console.log(query);
+    const products = await productsCollection.find(query).toArray();
+    res.send(products);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // ****************************************************************
