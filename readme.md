@@ -12,11 +12,13 @@
 - /api/categories [Returns all categories]
 - /api/categories/:catName [Get single category items]
 - /api/users/verified [if user verified or not verified]
+- /api/orders/:email [return all orders for that buyer]
 
 ## Post Operations
 
 - /api/users [Insers a new user]
 - /api/products [Inserts a new product]
+- /api/orders [Inserts a new order]
 
 ## PUT Operations
 

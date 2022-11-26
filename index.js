@@ -30,6 +30,7 @@ connectDB();
 const usersCollection = client.db("gpuHunt").collection("users");
 const productsCollection = client.db("gpuHunt").collection("products");
 const categoriesCollection = client.db("gpuHunt").collection("categories");
+const ordersCollection = client.db("gpuHunt").collection("orders");
 
 // ENDPOINTS
 /**
@@ -64,6 +65,33 @@ const categoriesCollection = client.db("gpuHunt").collection("categories");
 
 app.get("/", (req, res) => {
   res.send("GPUHunt's REST API is running");
+});
+
+// ****************************************************************
+// Orders Collections
+// ****************************************************************
+
+// Insert a new order
+app.post("/api/orders", async (req, res) => {
+  try {
+    const order = req.body;
+    const newOrder = await ordersCollection.insertOne(order);
+    res.send(newOrder);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Get all orders by email
+app.get("/api/orders/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const query = { buyerEmail: email };
+    const allOrders = await ordersCollection.find(query).toArray();
+    res.send(allOrders);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // ****************************************************************
@@ -150,7 +178,6 @@ app.get("/api/products/myProducts/:email", async (req, res) => {
   try {
     const email = req.params.email;
     const query = { sellerEmail: email };
-    console.log(query);
     const products = await productsCollection.find(query).toArray();
     res.send(products);
   } catch (err) {
