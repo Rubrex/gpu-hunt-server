@@ -100,6 +100,24 @@ app.patch("/api/orders/:productId", async (req, res) => {
   }
 });
 
+// Delete single product from my product
+// ordersCollection + productsCollection
+app.delete("/api/products/:productId", async (req, res) => {
+  const id = req.params.productId;
+  // Delete from productsCollection
+  const queryForProducts = { _id: ObjectId(id) };
+  const deleteProduct = await productsCollection.deleteOne(queryForProducts);
+
+  // Delete from ordersCollection
+  const queryForOrders = { productId: id };
+  const deleteOrder = await ordersCollection.deleteOne(queryForOrders);
+
+  if (deleteProduct.deletedCount && deleteOrder.deletedCount) {
+    return res.send({ acknowledged: true, deletedCount: 1 });
+  }
+  res.send({ acknowledged: true, deletedCount: 0 });
+});
+
 // ****************************************************************
 // Orders Collections
 // ****************************************************************
@@ -201,7 +219,7 @@ app.get("/api/products/advertised", async (req, res) => {
   const query = { advertised: true };
   const advertised = await productsCollection.find(query).toArray();
   const availableAdvertisedProducts = advertised.filter(
-    (product) => product.sold !== true
+    (product) => product.paid !== true
   );
   res.send(availableAdvertisedProducts);
 });
@@ -254,7 +272,11 @@ app.get("/api/categories/:categoryName", async (req, res) => {
     const catName = req.params.categoryName;
     const query = { productCategory: catName };
     const categories = await productsCollection.find(query).toArray();
-    res.send(categories);
+
+    const avialableCategoryProducts = categories.filter(
+      (product) => product.paid !== true
+    );
+    res.send(avialableCategoryProducts);
   } catch (err) {
     console.log(err);
   }
