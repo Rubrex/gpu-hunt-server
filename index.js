@@ -164,27 +164,6 @@ app.get("/api/users/role/:email", async (req, res) => {
   }
 });
 
-// Report a product
-app.put("/api/users", async (req, res) => {
-  try {
-    const email = req.body.email;
-    const pId = req.body.productId;
-    const reason = req.body.reason;
-
-    const doc = {
-      reportedBy: email,
-      productId: pId,
-      reason,
-    };
-
-    const insertReport = await reportsCollection.insertOne(doc);
-
-    res.send(insertReport);
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 // Get All sellers
 app.get("/api/users/sellers", async (req, res) => {
   try {
@@ -252,6 +231,63 @@ app.get("/api/users/buyers", async (req, res) => {
   try {
     const buyers = await usersCollection.find({ role: "user" }).toArray();
     res.send(buyers);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// ****************************************************************
+// Reports Collections
+// ****************************************************************
+
+// Report a product
+app.put("/api/reports", async (req, res) => {
+  try {
+    const email = req.body.email;
+    const pId = req.body.productId;
+    const pName = req.body.productName;
+    const reason = req.body.reason;
+
+    const doc = {
+      reportedBy: email,
+      productId: pId,
+      productName: pName,
+      reason,
+    };
+
+    const insertReport = await reportsCollection.insertOne(doc);
+
+    res.send(insertReport);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Get All Reports
+app.get("/api/reports", async (req, res) => {
+  try {
+    const allreports = await reportsCollection.find({}).toArray();
+    res.send(allreports);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Remove reported product by admin
+app.delete("/api/reports/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    // delete from reports
+    const deleteReport = await reportsCollection.deleteOne({ productId });
+    // delete from products
+    const deleteProduct = await productsCollection.deleteOne({
+      _id: ObjectId(productId),
+    });
+
+    if ((deleteReport.deletedCount, deleteProduct.deletedCount)) {
+      return res.send(deleteReport);
+    }
+    res.send(deleteReport);
   } catch (err) {
     console.log(err);
   }
