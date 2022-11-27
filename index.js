@@ -10,8 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Stuff
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.f3qt6qk.mongodb.net/?retryWrites=true&w=majority`;
-const uri = `mongodb://localhost:27017`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.f3qt6qk.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb://localhost:27017`;
 const client = new MongoClient(uri);
 
 // Connect to MongoDB
