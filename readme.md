@@ -1,3 +1,5 @@
+### API: https://gpuhunt-server.vercel.app/
+
 ## Get Operations
 
 - /api/users [Returns all users: ADMIN ONLY]
