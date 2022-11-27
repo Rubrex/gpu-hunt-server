@@ -212,6 +212,16 @@ app.delete("/api/users/sellers/:email", async (req, res) => {
   }
 });
 
+// Get all buyers
+app.get("/api/users/buyers", async (req, res) => {
+  try {
+    const buyers = await usersCollection.find({ role: "user" }).toArray();
+    res.send(buyers);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // ****************************************************************
 // Products Collections
 // ****************************************************************
