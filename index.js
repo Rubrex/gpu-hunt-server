@@ -32,6 +32,7 @@ const productsCollection = client.db("gpuHunt").collection("products");
 const categoriesCollection = client.db("gpuHunt").collection("categories");
 const ordersCollection = client.db("gpuHunt").collection("orders");
 const reportsCollection = client.db("gpuHunt").collection("reports");
+const blogsCollection = client.db("gpuHunt").collection("blogs");
 
 // ENDPOINTS
 
@@ -88,6 +89,19 @@ app.delete("/api/products/:productId", async (req, res) => {
     return res.send({ acknowledged: true, deletedCount: 1 });
   }
   res.send({ acknowledged: true, deletedCount: 0 });
+});
+
+// ****************************************************************
+// Blogs Collections
+// ****************************************************************
+// Get all blogs
+app.get("/api/blogs", async (req, res) => {
+  try {
+    const blogs = await blogsCollection.find({}).toArray();
+    res.send(blogs);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // ****************************************************************
