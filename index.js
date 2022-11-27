@@ -174,15 +174,28 @@ app.get("/api/users/sellers", async (req, res) => {
 });
 
 // Update seller verified status [ADMIN only]
-app.put("/api/users/sellers/:id", async (req, res) => {
+app.put("/api/users/sellers/:email", async (req, res) => {
   try {
-    const id = req.params.id;
-    const filter = { _id: ObjectId(id) };
+    const email = req.params.email;
+    const filter = { email };
     const updateDoc = { $set: { verified: true } };
     const verified = await usersCollection.updateOne(filter, updateDoc, {
       upsert: true,
     });
-    res.send(verified);
+    // updateProducts verified status
+    const filterProducts = { sellerEmail: email };
+    const productsVerifiedUser = await productsCollection.updateMany(
+      filterProducts,
+      updateDoc,
+      {
+        upsert: true,
+      }
+    );
+
+    if (verified.modifiedCount && productsVerifiedUser.modifiedCount) {
+      return res.send(verified);
+    }
+    res.send({ acknowledged: true, modifiedCount: 0 });
   } catch (err) {
     console.log(err);
   }
@@ -313,3 +326,5 @@ const port = process.env.PORT || 5000;
 app.listen(port, () =>
   console.log(colors.bgGreen.bold("Port is listening on port " + port))
 );
+
+module.exports = app;
