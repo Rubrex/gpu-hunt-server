@@ -31,6 +31,7 @@ const usersCollection = client.db("gpuHunt").collection("users");
 const productsCollection = client.db("gpuHunt").collection("products");
 const categoriesCollection = client.db("gpuHunt").collection("categories");
 const ordersCollection = client.db("gpuHunt").collection("orders");
+const reportsCollection = client.db("gpuHunt").collection("reports");
 
 // ENDPOINTS
 
@@ -158,6 +159,27 @@ app.get("/api/users/role/:email", async (req, res) => {
       return res.send(result?.role);
     }
     return res.send(false);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Report a product
+app.put("/api/users", async (req, res) => {
+  try {
+    const email = req.body.email;
+    const pId = req.body.productId;
+    const reason = req.body.reason;
+
+    const doc = {
+      reportedBy: email,
+      productId: pId,
+      reason,
+    };
+
+    const insertReport = await reportsCollection.insertOne(doc);
+
+    res.send(insertReport);
   } catch (err) {
     console.log(err);
   }

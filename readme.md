@@ -29,6 +29,7 @@
 - /api/users/wishlists/:productId [Adds a wishlist array of id to usersCollection] [OPTIONAL]
 - /api/users/sellers/:id [Update existing seller's verified status]
 - /api/orders/:productId [Pay by product id]
+- /api/users/ [Update product's reported status]
 
 ## Delete Operations
 
