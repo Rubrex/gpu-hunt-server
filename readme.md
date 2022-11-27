@@ -33,3 +33,4 @@
 - /api/products/reported/:id [delete reported product]
 - /api/products/myProducts/:id [delete a product]
 - /api/users/buyers/:id [delete a user]
+- /api/users/sellers/:id [delete a seller]

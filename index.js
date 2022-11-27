@@ -119,13 +119,6 @@ app.get("/api/orders/:email", async (req, res) => {
 // ****************************************************************
 // Users Collections
 // ****************************************************************
-/* const user = {
-  email: "user@gmail.com",
-  password: "45646dgf546df",
-  role: "user",
-  image: "https://buffer.com/library/content/images/2022/03/amina.png",
-  wishlists: [],
-}; */
 
 // Is user verified true || false
 app.get("/api/users/verified/:email", async (req, res) => {
@@ -165,6 +158,52 @@ app.get("/api/users/role/:email", async (req, res) => {
       return res.send(result?.role);
     }
     return res.send(false);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Get All sellers
+app.get("/api/users/sellers", async (req, res) => {
+  try {
+    const sellers = await usersCollection.find({ role: "seller" }).toArray();
+    res.send(sellers);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Update seller verified status [ADMIN only]
+app.put("/api/users/sellers/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filter = { _id: ObjectId(id) };
+    const updateDoc = { $set: { verified: true } };
+    const verified = await usersCollection.updateOne(filter, updateDoc, {
+      upsert: true,
+    });
+    res.send(verified);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Delete Seller account [ADMIN only]
+app.delete("/api/users/sellers/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const filterForUsers = { email };
+    const filterForProducts = { sellerEmail: email };
+
+    const deleteAllProducts = await productsCollection.deleteMany(
+      filterForProducts
+    );
+    const deleteUser = await usersCollection.deleteOne(filterForUsers);
+
+    if (deleteUser.deletedCount || deleteAllProducts) {
+      return res.send(deleteUser);
+    }
+    res.send("Failed");
   } catch (err) {
     console.log(err);
   }
