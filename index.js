@@ -321,7 +321,15 @@ app.post("/api/products", async (req, res) => {
     console.log(err);
   }
 });
-
+// Get all products
+app.get("/api/products", async (req, res) => {
+  try {
+    const products = await productsCollection.find({}).toArray();
+    res.send(products);
+  } catch (err) {
+    console.log(err);
+  }
+});
 // Get all advertised products
 app.get("/api/products/advertised", async (req, res) => {
   const query = { advertised: true };
