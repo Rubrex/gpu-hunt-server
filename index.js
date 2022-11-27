@@ -203,7 +203,10 @@ app.delete("/api/users/sellers/:email", async (req, res) => {
     if (deleteUser.deletedCount || deleteAllProducts) {
       return res.send(deleteUser);
     }
-    res.send("Failed");
+    res.send({
+      acknowledged: true,
+      deletedCount: 0,
+    });
   } catch (err) {
     console.log(err);
   }
@@ -264,23 +267,6 @@ app.put("/api/products/myProducts/:id", async (req, res) => {
 // ****************************************************************
 // Categories Collections
 // ****************************************************************
-
-// const categories = [
-//   {
-//     category: "GTX Series",
-//     image: "https://i.ibb.co/k02VXk9/gtx-logo.png",
-//   },
-//   {
-//     category: "RTX Series",
-//     image: "https://i.ibb.co/0Mjcfbk/rtx-logo.png",
-//   },
-//   {
-//     category: "RADEON Series",
-//     image: "https://i.ibb.co/J2Br9Pq/amd-radeon.png",
-//   },
-// ];
-
-// Get all Categories
 
 app.get("/api/categories", async (req, res) => {
   try {
