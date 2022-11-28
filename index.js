@@ -2,12 +2,35 @@ const express = require("express");
 const cors = require("cors");
 const colors = require("colors");
 const { MongoClient, ObjectId } = require("mongodb");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
+// Verify JWT Token
+const verifyJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  // If no headers sent, status 401
+  if (!authHeader) {
+    return res.status(401).send("Unauthorized access");
+  }
+
+  // Verify Token here
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
+    if (err) {
+      return res.status(403).send("Forbidden access");
+    }
+    // Sending decoded value to req object and access it
+    // inside the api function
+    req.decoded = decoded;
+
+    next();
+  });
+};
 
 // MongoDB Stuff
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.f3qt6qk.mongodb.net/?retryWrites=true&w=majority`;
@@ -92,6 +115,24 @@ app.delete("/api/products/:productId", async (req, res) => {
 });
 
 // ****************************************************************
+// JWT TOken
+// ****************************************************************
+// Generate JWT token for sign in
+app.get("/api/jwt", async (req, res) => {
+  const email = req.query.email;
+  const query = { email };
+  const user = await usersCollection.findOne(query);
+  console.log(query, user);
+
+  if (user) {
+    const token = jwt.sign(query, process.env.JWT_SECRET);
+
+    return res.send({ accessToken: token });
+  }
+
+  res.status(403).send({ accessToken: "" });
+});
+// ****************************************************************
 // Blogs Collections
 // ****************************************************************
 // Get all blogs
@@ -120,10 +161,14 @@ app.post("/api/orders", async (req, res) => {
 });
 
 // Get all orders by email
-app.get("/api/orders/:email", async (req, res) => {
+app.get("/api/orders/:email", verifyJWT, async (req, res) => {
   try {
     const email = req.params.email;
+    const decodedEmail = req.decoded.email;
     const query = { buyerEmail: email };
+    if (decodedEmail !== email) {
+      return res.status(403).send({ message: "forbidden access" });
+    }
     const allOrders = await ordersCollection.find(query).toArray();
     res.send(allOrders);
   } catch (err) {
@@ -164,10 +209,14 @@ app.post("/api/users", async (req, res) => {
 });
 
 // Return user role "user" || "admin" || false
-app.get("/api/users/role/:email", async (req, res) => {
+app.get("/api/users/role/:email", verifyJWT, async (req, res) => {
   try {
     const email = req.params.email;
+    const decodedEmail = req.decoded.email;
     const query = { email };
+    if (decodedEmail !== email) {
+      return res.status(403).send("Forbidden access");
+    }
     const result = await usersCollection.findOne(query);
     if (result?.role) {
       return res.send(result?.role);
@@ -212,7 +261,7 @@ app.put("/api/users/sellers/:email", async (req, res) => {
     }
     res.send({ acknowledged: true, modifiedCount: 0 });
   } catch (err) {
-    console.log(err);
+    console.log("Error in verify seller", err);
   }
 });
 
