@@ -82,7 +82,6 @@ app.patch("/api/orders/:productId", async (req, res) => {
       productsQuery,
       productsDoc
     );
-    console.log(ordersResult, productsResult);
 
     if (ordersResult.modifiedCount && productsResult.modifiedCount) {
       return res.send(ordersResult);
